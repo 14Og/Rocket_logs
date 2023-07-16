@@ -15,6 +15,7 @@ unsigned long tmr2 = 0;
 unsigned long tmr3 = 0;
 float buff_alt = -100;
 float bme_alt = 0;
+float calibrating_alt = 0;
 float mpu_data[MPU_REGC] = {0, 0, 0, 0, 0, 0, 0};  //  [accX, accY, accZ, temp, gyrX, gyrY, gyrZ] from mpu-6050
 
 
@@ -66,30 +67,38 @@ void Start_wait()
     tone(BUZZER, 1000, 200);
     delay(500);
     sd_file.print(float(millis()/1000));
-    sd_file.println("WAIT FOR START");
+    sd_file.println("|\tWAIT FOR START");
     #ifdef DEBUG
       Serial.println("WAIT FOR START");
     #endif
   }
-  delay(500);
+  delay(1000);
   svp.write(SERVO_WORKING_ANGLE);
+  sd_file.print(float(millis()/1000));
+  sd_file.println("|\tRESCUE SYSTEM READY");
   #ifdef DEBUG
     Serial.println("RESCUE SYSTEM READY");
   #endif
-  while(accumulate_start < 5000)
+  while(accumulate_start < 4500)
   {
     if (analogRead(SWITCH_TOGGLE)<= 0)
       accumulate_start = 0;
     else
     {
       accumulate_start += analogRead(SWITCH_TOGGLE);
-      tone(2000, 100);
+      tone(BUZZER, 2000, 100);
       delay(100);
-      tone(2000, 100);
+      tone(BUZZER, 2000, 100);
       delay(1000);    
     }
   }
-
+  sd_file.print(float(millis()/1000));
+  sd_file.println("|\tFLIGHT MODE ON");
+  tone (BUZZER, 2500, 1000);
+  delay(2000);
+  #ifdef DEBUG
+    Serial.println("FLIGHT MODE ON");
+  #endif
 }
 
 void Get_data()  //  reads mpu-6050 data and returns mpu_data array pointer
@@ -106,7 +115,7 @@ void Get_data()  //  reads mpu-6050 data and returns mpu_data array pointer
     else if(i > 3)
     mpu_data[i] = mpu_data[i] / 32768 * 250; 
   }
-  bme_alt = pressureToAltitude(bme_slave.readPressure());
+  bme_alt = pressureToAltitude(bme_slave.readPressure()) - calibrating_alt;
 }
 
 
@@ -155,21 +164,13 @@ void WriteData()  //  writes data to the microSD
 void Rescue_deploy()
 {
  svp.write(SERVO_RESCUE_ANGLE);
-  // sd_file.println();
-  // sd_file.print(float(millis())/1000);
-  // sd_file.print(":\t");
-  // sd_file.println("RESCUE SYSTEM DEPLOYED!");
-  // #ifdef DEBUG
-  // Serial.print(float(millis())/1000);
-  // Serial.print(":\t");
-  // Serial.println("RESCUE SYSTEM DEPLOYED!");
-//   #endif
 }
 
-void File_reopen()
+void File_reopen(unsigned long &timer, File &file)
   {
-    sd_file.close();
-    sd_file = SD.open("logs.txt", FILE_WRITE);
+    timer = millis();
+    file.close();
+    file = SD.open("logs.txt", FILE_WRITE);
     #ifdef DEBUG
       Serial.println("FILE REOPENED...");
     #endif
@@ -185,7 +186,7 @@ void Apogee_check()
     {
       Rescue_deploy();
       apogee_state = true;
-      data_str+= "*********************APOGEEE REACHED!*********************\t";
+      data_str+= "APOGEEE REACHED!";
       #ifdef DEBUG
       Serial.println(data_str);
       #endif 
@@ -202,4 +203,14 @@ void Apogee_check()
     sd_file.println(data_str);
   }
 
+}
+
+
+void  Calibrate_altitude()
+{
+  for (byte i=0; i<10; i++)
+  {
+    calibrating_alt+= pressureToAltitude(bme_slave.readPressure());
+  }
+  calibrating_alt/=10;
 }
