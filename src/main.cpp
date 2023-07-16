@@ -27,4 +27,9 @@ void loop()
   {  
     File_reopen(tmr3, sd_file);
   }
+  if ((apogee_state && bme_alt <= -2) | millis() >= FLIGHT_TIME)
+  {
+    File_reopen(tmr3, sd_file);
+    Buzzer_beep();
+  }
 }

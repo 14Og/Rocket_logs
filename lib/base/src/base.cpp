@@ -1,6 +1,6 @@
 #include <Base.h>
 
-#define DEBUG
+// #define DEBUG
 
 GyverBME280 bme_slave;  //  bme-280 object
 File sd_file;  //  microSD card object
@@ -66,7 +66,7 @@ void Start_wait()
   {
     tone(BUZZER, 1000, 200);
     delay(500);
-    sd_file.print(float(millis()/1000));
+    sd_file.print(float(millis())/1000);
     sd_file.println("|\tWAIT FOR START");
     #ifdef DEBUG
       Serial.println("WAIT FOR START");
@@ -140,6 +140,9 @@ void WriteData()  //  writes data to the microSD
     data_str+= "|\tacz: ";
     data_str+= String(mpu_data[2]);
     sd_file.print(data_str);
+    #ifdef DEBUG
+     Serial.print(data_str);
+    #endif
     data_str= "|\tgX: ";
     data_str+= String(mpu_data[4]);
     data_str+= "|\tgY: "; 
@@ -186,7 +189,9 @@ void Apogee_check()
     {
       Rescue_deploy();
       apogee_state = true;
-      data_str+= "APOGEEE REACHED!";
+      data_str+= "APOGEEE REACHED!|\t|\t";
+      data_str+= String(buff_alt);
+      data_str+= " METERS";
       #ifdef DEBUG
       Serial.println(data_str);
       #endif 
@@ -213,4 +218,13 @@ void  Calibrate_altitude()
     calibrating_alt+= pressureToAltitude(bme_slave.readPressure());
   }
   calibrating_alt/=10;
+}
+
+void Buzzer_beep()
+{
+  while(1)
+  {
+    tone(BUZZER, 3000, 500);
+    delay(700);
+  }
 }

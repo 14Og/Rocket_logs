@@ -6,7 +6,8 @@
 #include <Servo.h>
 
 
-// #define FLIGHT_TIME 120000  // milliseconds
+#define FLIGHT_TIME 50000  // milliseconds
+#define ROCKET_RESCUE_ALT 10 // after apogee buzzer will start beeping when altitude less then this
 #define FILE_SAVE 5000 // file will be closed and reopened every 5 seconds in case of troubles with logging
 #define MPU_ADDR 0x68  //  mpu-6050 i2c address
 #define BME_ADDR 0x76  // bme-280 i2c address
@@ -45,4 +46,5 @@ void Rescue_deploy();  // deploy rescue system of rocket
 void File_reopen(unsigned long &timer, File &file);  // reopening logs file every 5 seconds to prevent from deleting
 void Start_wait();  
 void Calibrate_altitude();
+void Buzzer_beep();
 
