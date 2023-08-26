@@ -6,7 +6,7 @@
 #include <Servo.h>
 
 
-#define FLIGHT_TIME 50000  // milliseconds
+#define FLIGHT_TIME 80000  // milliseconds
 #define ROCKET_RESCUE_ALT 10 // after apogee buzzer will start beeping when altitude less then this
 #define FILE_SAVE 5000 // file will be closed and reopened every 5 seconds in case of troubles with logging
 #define MPU_ADDR 0x68  //  mpu-6050 i2c address
@@ -14,9 +14,9 @@
 #define MPU_REGC 7  // mumber of registers to read from mpu-6050 through i2c
 #define SD_CHIP_SELECT 10  //  CS pin for SD-card on arduino
 #define SERVO_PWM 2  // servomotor PWM pin on arduino
-#define SERVO_WORKING_ANGLE 0  //  PUT REAL PARAMETER!
-#define SERVO_RESCUE_ANGLE 180  //  PUT REAL PARAMETER!
-#define ALTITUDE_TRESHOLD 0.2  // PUT REAL PARAMETER!
+#define SERVO_WORKING_ANGLE 70  //  PUT REAL PARAMETER!
+#define SERVO_RESCUE_ANGLE 23 //  PUT REAL PARAMETER!
+#define ALTITUDE_TRESHOLD 0.1  // PUT REAL PARAMETER!
 #define ENDSTOP A3  // endstop switch pin on arduino
 #define SWITCH_TOGGLE A7  //  switch sensor pin on arduino
 #define BUZZER 3  //  buzzer pin on arduino

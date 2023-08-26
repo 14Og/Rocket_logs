@@ -10,6 +10,7 @@ void setup()
   else while(1){};
 }
 
+
 void loop() 
 {
   if (millis() - tmr1 >= 100)

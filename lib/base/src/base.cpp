@@ -81,7 +81,7 @@ void Start_wait()
   #endif
   while(accumulate_start < 4500)
   {
-    if (analogRead(SWITCH_TOGGLE)<= 0)
+    if (analogRead(SWITCH_TOGGLE)<= 900)
       accumulate_start = 0;
     else
     {
